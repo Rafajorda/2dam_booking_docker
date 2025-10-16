@@ -16,6 +16,7 @@ services:
   database:
     image: yobasystems/alpine-mariadb:11.4.5
     container_name:  2dam-booking-db
+    env_file: ./.env
     ports:
       - "2222:3306"
     restart: always
@@ -27,3 +28,18 @@ services:
       - TZ=Europe/Berlin
     volumes:
      - ./data/db/mysql:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin:apache
+    container_name: phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      PMA_HOST: database                        # nombre del servicio de tu MySQL
+      PMA_USER: ${MYSQL_USER}                   # opcional
+      PMA_PASSWORD: ${MYSQL_PASSWORD}           # opcional
+      UPLOAD_LIMIT: 256M
+      # BLOWFISH_SECRET: "cambia-esto-a-una-cadena-larga-aleatoria"
+    ports:
+      - "8081:80"                               # acceso a phpMyAdmin en http://localhost:8081
+    
